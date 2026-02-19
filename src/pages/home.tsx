@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { AsciiAnimation } from '#/components/ascii-animation'
 import { ThemeSwitcher } from '#/components/theme'
 import { Alert, Button } from '#/components/ui-react-aria'
 import { useAuthentication } from '#/context/auth/AuthProvider'
@@ -48,6 +49,7 @@ export default function Home() {
           </Alert>
         </div>
       </div>
+      <AsciiAnimation />
       <footer className="mt-auto py-5 text-center">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <p className="text-gray-600 text-sm tracking-wide dark:text-gray-400">
