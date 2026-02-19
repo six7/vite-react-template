@@ -7,6 +7,16 @@
     <meta name="description" content="Minimal React Vite Tailwind starter kit" />
     <link rel="preconnect" href="https://cdn.jsdelivr.net/" crossorigin />
     <title>Vite React Tailwind</title>
+    <script>
+      // Prevent flash of wrong theme – runs before React renders
+      ;(function () {
+        try {
+          var t = JSON.parse(localStorage.getItem('ui_theme'))
+          if (t === 'dark') document.documentElement.classList.add('dark')
+          else document.documentElement.classList.remove('dark')
+        } catch (_) {}
+      })()
+    </script>
   </head>
   <body class="h-screen w-screen bg-gray-50 dark:bg-slate-900">
     <div id="root"></div>

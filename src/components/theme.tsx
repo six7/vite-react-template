@@ -1,5 +1,5 @@
 import * as Lucide from 'lucide-react'
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useLocalStorage } from '#/context/hooks/useLocalStorage'
 
 import { Button, ctrp } from './ui-react-aria'
@@ -9,15 +9,19 @@ interface ThemeSwitcherProps {
 }
 
 export function ThemeSwitcher({ className }: ThemeSwitcherProps) {
-  const [savedTheme, setSavedTheme] = useLocalStorage('ui_theme', null)
+  const [savedTheme, setSavedTheme] = useLocalStorage('ui_theme', 'light')
   const IconComponent = savedTheme === 'dark' ? Lucide.Moon : Lucide.SunDim
 
-  const toggleTheme = useCallback(() => {
-    if (savedTheme === 'light') {
+  // Sync the DOM class with the saved preference on mount
+  useEffect(() => {
+    if (savedTheme === 'dark') {
       document.documentElement.classList.add('dark')
     } else {
       document.documentElement.classList.remove('dark')
     }
+  }, [savedTheme])
+
+  const toggleTheme = useCallback(() => {
     setSavedTheme(savedTheme === 'light' ? 'dark' : 'light')
   }, [savedTheme, setSavedTheme])
 
