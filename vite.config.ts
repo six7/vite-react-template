@@ -28,7 +28,7 @@ export default defineConfig({
       input: { app: resolve(__dirname, 'index.html') },
     },
   },
-  base: '/',
+  base: '/vite-react-template/',
   server: {
     port: 3000,
     strictPort: true,
