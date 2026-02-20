@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
-import { describe, expect, test } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
+import { describe, expect, test } from 'vitest'
 import Home from '#/pages/home'
 
 describe('Homepage', () => {
@@ -13,12 +13,30 @@ describe('Homepage', () => {
     expect(baseElement).toBeTruthy()
   })
 
-  test('should render tech stack text', () => {
+  test('should render game board', () => {
+    const { getByTestId } = render(
+      <MemoryRouter>
+        <Home />
+      </MemoryRouter>
+    )
+    expect(getByTestId('game-board')).toBeDefined()
+  })
+
+  test('should render score display', () => {
+    const { getByTestId } = render(
+      <MemoryRouter>
+        <Home />
+      </MemoryRouter>
+    )
+    expect(getByTestId('score-display')).toBeDefined()
+  })
+
+  test('should render start button', () => {
     const { getByText } = render(
       <MemoryRouter>
         <Home />
       </MemoryRouter>
     )
-    expect(getByText(/Vite \+ React/i)).toBeDefined()
+    expect(getByText('Start Game')).toBeDefined()
   })
 })
