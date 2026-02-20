@@ -42,4 +42,7 @@ pre-push:
   commands:
     npm-audit:
       tags: frontend security
+      skip:
+        - env:
+            CI: "true"
       run: pnpm audit --prod
