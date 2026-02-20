@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import ViteLogo from '../assets/images/vite.svg'
 
 export default function Home() {
@@ -9,6 +10,14 @@ export default function Home() {
         </div>
         <div className="text-center text-gray-600 text-lg dark:text-gray-400">
           <p className="leading-8">Vite + React + Typescript + Tailwind CSS</p>
+        </div>
+        <div className="flex justify-center">
+          <Link
+            to="/tetris"
+            className="font-mono font-semibold text-primary-600 text-sm underline-offset-2 hover:underline dark:text-primary-400"
+          >
+            Play Tetris →
+          </Link>
         </div>
       </div>
     </div>
