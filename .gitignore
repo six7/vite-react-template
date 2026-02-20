@@ -40,3 +40,6 @@ dist-ssr
 # envars
 .env.*
 !.env.example
+
+# Local lefthook overrides
+lefthook-local.yml
