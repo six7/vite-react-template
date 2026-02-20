@@ -1,10 +1,10 @@
-import { render } from '@testing-library/react'
-import { describe, expect, test } from 'vitest'
+import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
+import { describe, expect, test } from 'vitest'
 import Home from '#/pages/home'
 
-describe('Homepage', () => {
-  test('should render successfully', () => {
+describe('Homepage (Tetris)', () => {
+  test('should render without crashing', () => {
     const { baseElement } = render(
       <MemoryRouter>
         <Home />
@@ -13,12 +13,21 @@ describe('Homepage', () => {
     expect(baseElement).toBeTruthy()
   })
 
-  test('should render tech stack text', () => {
-    const { getByText } = render(
+  test('should render the game board', () => {
+    render(
       <MemoryRouter>
         <Home />
       </MemoryRouter>
     )
-    expect(getByText(/Vite \+ React/i)).toBeDefined()
+    expect(screen.getByTestId('game-board')).toBeDefined()
+  })
+
+  test('should render the score display', () => {
+    render(
+      <MemoryRouter>
+        <Home />
+      </MemoryRouter>
+    )
+    expect(screen.getByTestId('score')).toBeDefined()
   })
 })
