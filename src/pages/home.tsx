@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Button } from '#/components/ui-react-aria'
 
 // --- Types ---
 type Cell = string | null
@@ -337,44 +338,47 @@ export default function Home() {
   }, [])
 
   // Build display board with current piece overlaid
-  const displayBoard = state.board.map((row) => [...row])
-  if (state.currentPiece) {
-    // Ghost piece
-    let ghostRow = state.currentPiece.pos.row
-    while (
-      !collides(state.board, state.currentPiece.shape, {
-        row: ghostRow + 1,
-        col: state.currentPiece.pos.col,
-      })
-    ) {
-      ghostRow++
-    }
-    for (let r = 0; r < state.currentPiece.shape.length; r++) {
-      for (let c = 0; c < (state.currentPiece.shape[r]?.length ?? 0); c++) {
-        if (state.currentPiece.shape[r]?.[c]) {
-          const nr = ghostRow + r
-          const nc = state.currentPiece.pos.col + c
-          if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && !displayBoard[nr]?.[nc]) {
-            const ghostRow2 = displayBoard[nr]
-            if (ghostRow2) ghostRow2[nc] = 'ghost'
+  const displayBoard = useMemo(() => {
+    const board = state.board.map((row) => [...row])
+    if (state.currentPiece) {
+      // Ghost piece
+      let ghostRow = state.currentPiece.pos.row
+      while (
+        !collides(state.board, state.currentPiece.shape, {
+          row: ghostRow + 1,
+          col: state.currentPiece.pos.col,
+        })
+      ) {
+        ghostRow++
+      }
+      for (let r = 0; r < state.currentPiece.shape.length; r++) {
+        for (let c = 0; c < (state.currentPiece.shape[r]?.length ?? 0); c++) {
+          if (state.currentPiece.shape[r]?.[c]) {
+            const nr = ghostRow + r
+            const nc = state.currentPiece.pos.col + c
+            if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && !board[nr]?.[nc]) {
+              const ghostRowRef = board[nr]
+              if (ghostRowRef) ghostRowRef[nc] = 'ghost'
+            }
+          }
+        }
+      }
+      // Current piece
+      for (let r = 0; r < state.currentPiece.shape.length; r++) {
+        for (let c = 0; c < (state.currentPiece.shape[r]?.length ?? 0); c++) {
+          if (state.currentPiece.shape[r]?.[c]) {
+            const nr = state.currentPiece.pos.row + r
+            const nc = state.currentPiece.pos.col + c
+            if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS) {
+              const boardRow = board[nr]
+              if (boardRow) boardRow[nc] = state.currentPiece.color
+            }
           }
         }
       }
     }
-    // Current piece
-    for (let r = 0; r < state.currentPiece.shape.length; r++) {
-      for (let c = 0; c < (state.currentPiece.shape[r]?.length ?? 0); c++) {
-        if (state.currentPiece.shape[r]?.[c]) {
-          const nr = state.currentPiece.pos.row + r
-          const nc = state.currentPiece.pos.col + c
-          if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS) {
-            const boardRow = displayBoard[nr]
-            if (boardRow) boardRow[nc] = state.currentPiece.color
-          }
-        }
-      }
-    }
-  }
+    return board
+  }, [state.board, state.currentPiece])
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4 dark:bg-gray-900">
@@ -451,13 +455,9 @@ export default function Home() {
           </div>
 
           {(!state.gameStarted || state.gameOver) && (
-            <button
-              type="button"
-              onClick={startGame}
-              className="rounded-lg bg-indigo-600 px-4 py-2 font-semibold text-white transition hover:bg-indigo-700"
-            >
+            <Button variant="primary" onPress={startGame}>
               {state.gameOver ? 'Restart' : 'Start Game'}
-            </button>
+            </Button>
           )}
 
           {state.gameOver && (
