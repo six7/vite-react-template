@@ -70,7 +70,8 @@ function rotatePiece(piece: Tetromino): Tetromino {
     if (r.length !== piece.shape.length) return false
     return r.every((row, ri) => row.every((cell, ci) => cell === piece.shape[ri]?.[ci]))
   })
-  const nextIdx = (currentIdx + 1) % rotations.length
+  const safeIdx = currentIdx === -1 ? 0 : currentIdx
+  const nextIdx = (safeIdx + 1) % rotations.length
   return { ...piece, shape: rotations[nextIdx] as number[][] }
 }
 

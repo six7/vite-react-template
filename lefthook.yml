@@ -42,4 +42,4 @@ pre-push:
   commands:
     npm-audit:
       tags: frontend security
-      run: test "${CI}" = "true" && echo "Skipping audit in CI" || pnpm audit --prod
+      run: test -n "${CI}" && echo "Skipping audit in CI" || pnpm audit --prod

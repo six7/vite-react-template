@@ -1,5 +1,6 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import { twMerge } from 'tailwind-merge'
 import { useTetris } from '#/hooks/use-tetris'
 import {
   BOARD_HEIGHT,
@@ -82,9 +83,13 @@ export default function TetrisPage() {
           rotate()
           break
         case ' ':
-          e.preventDefault()
-          if (status === 'idle' || status === 'over') start()
-          else hardDrop()
+          if (status === 'idle' || status === 'over') {
+            e.preventDefault()
+            start()
+          } else if (status === 'playing') {
+            e.preventDefault()
+            hardDrop()
+          }
           break
         case 'p':
         case 'P':
@@ -100,86 +105,94 @@ export default function TetrisPage() {
     return () => window.removeEventListener('keydown', handle)
   }, [status, start, pause, moveLeft, moveRight, moveDown, rotate, hardDrop])
 
-  const ghostRow = getGhostRow(board, current)
+  const ghostRow = useMemo(() => getGhostRow(board, current), [board, current])
 
   type DisplayCell = { key: string; type: TetrominoType | null; isGhost: boolean }
-  const boardCells: DisplayCell[] = []
-  for (let ri = 0; ri < BOARD_HEIGHT; ri++) {
-    for (let ci = 0; ci < BOARD_WIDTH; ci++) {
-      const cell = board[ri]?.[ci] ?? null
-      if (cell !== null) {
-        boardCells.push({ key: `${ri}-${ci}`, type: cell, isGhost: false })
-        continue
-      }
-      let displayType: TetrominoType | null = null
-      let isGhost = false
-      if (current) {
-        const pr = ri - current.row
-        const pc = ci - current.col
-        if (
-          pr >= 0 &&
-          pr < current.shape.length &&
-          pc >= 0 &&
-          pc < (current.shape[pr]?.length ?? 0) &&
-          current.shape[pr]?.[pc] === 1
-        ) {
-          displayType = current.type
-        } else {
-          const gr = ri - ghostRow
-          const gc = ci - current.col
+  const boardCells = useMemo(() => {
+    const cells: DisplayCell[] = []
+    for (let ri = 0; ri < BOARD_HEIGHT; ri++) {
+      for (let ci = 0; ci < BOARD_WIDTH; ci++) {
+        const cell = board[ri]?.[ci] ?? null
+        if (cell !== null) {
+          cells.push({ key: `${ri}-${ci}`, type: cell, isGhost: false })
+          continue
+        }
+        let displayType: TetrominoType | null = null
+        let isGhost = false
+        if (current) {
+          const pr = ri - current.row
+          const pc = ci - current.col
           if (
-            gr >= 0 &&
-            gr < current.shape.length &&
-            gc >= 0 &&
-            gc < (current.shape[gr]?.length ?? 0) &&
-            current.shape[gr]?.[gc] === 1
+            pr >= 0 &&
+            pr < current.shape.length &&
+            pc >= 0 &&
+            pc < (current.shape[pr]?.length ?? 0) &&
+            current.shape[pr]?.[pc] === 1
           ) {
             displayType = current.type
-            isGhost = true
+          } else {
+            const gr = ri - ghostRow
+            const gc = ci - current.col
+            if (
+              gr >= 0 &&
+              gr < current.shape.length &&
+              gc >= 0 &&
+              gc < (current.shape[gr]?.length ?? 0) &&
+              current.shape[gr]?.[gc] === 1
+            ) {
+              displayType = current.type
+              isGhost = true
+            }
           }
         }
+        cells.push({ key: `${ri}-${ci}`, type: displayType, isGhost })
       }
-      boardCells.push({ key: `${ri}-${ci}`, type: displayType, isGhost })
     }
-  }
+    return cells
+  }, [board, current, ghostRow])
 
-  const nextCells: Array<{ key: string; filled: boolean }> = []
-  if (next) {
-    for (let ri = 0; ri < next.shape.length; ri++) {
-      const row = next.shape[ri]
-      if (!row) continue
-      for (let ci = 0; ci < row.length; ci++) {
-        nextCells.push({ key: `${ri}-${ci}`, filled: row[ci] === 1 })
+  const nextCells = useMemo(() => {
+    const cells: Array<{ key: string; filled: boolean }> = []
+    if (next) {
+      for (let ri = 0; ri < next.shape.length; ri++) {
+        const row = next.shape[ri]
+        if (!row) continue
+        for (let ci = 0; ci < row.length; ci++) {
+          cells.push({ key: `${ri}-${ci}`, filled: row[ci] === 1 })
+        }
       }
     }
-  }
+    return cells
+  }, [next])
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-gray-50 px-4 py-10 dark:bg-gray-950">
+    <div
+      className="flex min-h-screen flex-col items-center justify-center gap-4 bg-gray-50 px-4 py-10 dark:bg-gray-950"
+      aria-label="Tetris game"
+    >
       <h1 className="font-bold font-mono text-3xl text-gray-900 tracking-widest dark:text-gray-100">
         TETRIS
       </h1>
 
       <div className="flex items-start gap-6">
         {/* Board */}
-        <div
+        <section
+          aria-label="Tetris game board"
           className="border-2 border-gray-400 dark:border-gray-600"
           style={{ display: 'grid', gridTemplateColumns: `repeat(${BOARD_WIDTH}, 1.5rem)` }}
         >
           {boardCells.map(({ key, type, isGhost }) => (
             <div
               key={key}
-              className={[
+              className={twMerge(
                 'h-6 w-6 border border-gray-200 dark:border-gray-800',
-                type && !isGhost ? TETROMINO_COLORS[type] : '',
-                isGhost && type ? `${TETROMINO_COLORS[type]} opacity-25` : '',
-                !type ? 'bg-white dark:bg-gray-900' : '',
-              ]
-                .filter(Boolean)
-                .join(' ')}
+                !type && 'bg-white dark:bg-gray-900',
+                type && !isGhost && TETROMINO_COLORS[type],
+                isGhost && type && `${TETROMINO_COLORS[type]} opacity-25`
+              )}
             />
           ))}
-        </div>
+        </section>
 
         {/* Sidebar */}
         <div className="flex w-28 flex-col gap-4 font-mono">
@@ -188,7 +201,10 @@ export default function TetrisPage() {
             <p className="mb-1 font-semibold text-gray-500 text-xs uppercase tracking-widest dark:text-gray-400">
               Next
             </p>
-            <div className="flex h-16 w-16 items-center justify-center border-2 border-gray-300 bg-white dark:border-gray-700 dark:bg-gray-900">
+            <div
+              className="flex h-16 w-16 items-center justify-center border-2 border-gray-300 bg-white dark:border-gray-700 dark:bg-gray-900"
+              aria-label={next ? `Next piece: ${next.type}` : 'No next piece'}
+            >
               {next && (
                 <div
                   style={{
@@ -208,29 +224,38 @@ export default function TetrisPage() {
           </div>
 
           {/* Stats */}
-          <div className="space-y-3 text-sm">
+          <div className="space-y-3 text-sm" aria-live="polite" aria-atomic="false">
             <div>
               <p className="text-gray-500 text-xs uppercase tracking-widest dark:text-gray-400">
                 Score
               </p>
-              <p className="font-bold text-gray-900 dark:text-gray-100">{score}</p>
+              <p className="font-bold text-gray-900 dark:text-gray-100" data-testid="score">
+                {score}
+              </p>
             </div>
             <div>
               <p className="text-gray-500 text-xs uppercase tracking-widest dark:text-gray-400">
                 Level
               </p>
-              <p className="font-bold text-gray-900 dark:text-gray-100">{level}</p>
+              <p className="font-bold text-gray-900 dark:text-gray-100" data-testid="level">
+                {level}
+              </p>
             </div>
             <div>
               <p className="text-gray-500 text-xs uppercase tracking-widest dark:text-gray-400">
                 Lines
               </p>
-              <p className="font-bold text-gray-900 dark:text-gray-100">{lines}</p>
+              <p className="font-bold text-gray-900 dark:text-gray-100" data-testid="lines">
+                {lines}
+              </p>
             </div>
           </div>
 
           {/* Controls hint */}
-          <div className="mt-2 space-y-1 text-gray-400 text-xs dark:text-gray-600">
+          <div
+            className="mt-2 space-y-1 text-gray-400 text-xs dark:text-gray-600"
+            aria-label="Keyboard controls"
+          >
             <p>←/A Move</p>
             <p>→/D Move</p>
             <p>↑/W Rotate</p>
@@ -243,19 +268,26 @@ export default function TetrisPage() {
 
       {/* Overlay messages */}
       {status === 'idle' && (
-        <p className="font-mono text-gray-500 text-sm dark:text-gray-400">
+        <output className="font-mono text-gray-500 text-sm dark:text-gray-400">
           Press <kbd className="rounded bg-gray-200 px-1 dark:bg-gray-800">Enter</kbd> or{' '}
           <kbd className="rounded bg-gray-200 px-1 dark:bg-gray-800">Space</kbd> to start
-        </p>
+        </output>
       )}
       {status === 'paused' && (
-        <p className="font-mono text-sm text-yellow-600 dark:text-yellow-400">
+        <output
+          className="font-mono text-sm text-yellow-600 dark:text-yellow-400"
+          aria-live="polite"
+        >
           Paused — press <kbd className="rounded bg-gray-200 px-1 dark:bg-gray-800">P</kbd> to
           resume
-        </p>
+        </output>
       )}
       {status === 'over' && (
-        <p className="font-mono text-red-600 text-sm dark:text-red-400">
+        <p
+          className="font-mono text-red-600 text-sm dark:text-red-400"
+          role="alert"
+          aria-live="assertive"
+        >
           Game Over — press <kbd className="rounded bg-gray-200 px-1 dark:bg-gray-800">Enter</kbd>{' '}
           to restart
         </p>
