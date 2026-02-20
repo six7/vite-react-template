@@ -40,4 +40,3 @@ dist-ssr
 # envars
 .env.*
 !.env.example
-package-lock.json
