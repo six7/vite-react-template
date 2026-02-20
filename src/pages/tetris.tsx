@@ -167,26 +167,26 @@ export default function TetrisPage() {
 
   return (
     <div
-      className="flex min-h-screen flex-col items-center justify-center gap-4 bg-gray-50 px-4 py-10 dark:bg-gray-950"
+      className="flex min-h-screen flex-col items-center justify-center gap-6 bg-black px-4 py-10 font-mono"
       aria-label="Tetris game"
     >
-      <h1 className="font-bold font-mono text-3xl text-gray-900 tracking-widest dark:text-gray-100">
-        TETRIS
+      <h1 className="font-bold text-2xl text-cyan-400 tracking-[0.3em] drop-shadow-[0_0_8px_rgba(34,211,238,0.7)]">
+        ▓ TETRIS ▓
       </h1>
 
       <div className="flex items-start gap-6">
         {/* Board */}
         <section
           aria-label="Tetris game board"
-          className="border-2 border-gray-400 dark:border-gray-600"
+          className="border-2 border-green-700"
           style={{ display: 'grid', gridTemplateColumns: `repeat(${BOARD_WIDTH}, 1.5rem)` }}
         >
           {boardCells.map(({ key, type, isGhost }) => (
             <div
               key={key}
               className={twMerge(
-                'h-6 w-6 border border-gray-200 dark:border-gray-800',
-                !type && 'bg-white dark:bg-gray-900',
+                'h-6 w-6 border border-green-950',
+                !type && 'bg-black',
                 type && !isGhost && TETROMINO_COLORS[type],
                 isGhost && type && `${TETROMINO_COLORS[type]} opacity-25`
               )}
@@ -195,14 +195,12 @@ export default function TetrisPage() {
         </section>
 
         {/* Sidebar */}
-        <div className="flex w-28 flex-col gap-4 font-mono">
+        <div className="flex w-32 flex-col gap-5">
           {/* Next piece */}
           <div>
-            <p className="mb-1 font-semibold text-gray-500 text-xs uppercase tracking-widest dark:text-gray-400">
-              Next
-            </p>
+            <p className="mb-1 text-green-600 text-xs uppercase tracking-widest">NEXT</p>
             <div
-              className="flex h-16 w-16 items-center justify-center border-2 border-gray-300 bg-white dark:border-gray-700 dark:bg-gray-900"
+              className="flex h-16 w-16 items-center justify-center border border-green-800 bg-black"
               aria-label={next ? `Next piece: ${next.type}` : 'No next piece'}
             >
               {next && (
@@ -215,7 +213,7 @@ export default function TetrisPage() {
                   {nextCells.map(({ key, filled }) => (
                     <div
                       key={key}
-                      className={`h-4 w-4 ${filled ? TETROMINO_COLORS[next.type] : ''}`}
+                      className={`h-4 w-4 ${filled ? TETROMINO_COLORS[next.type] : 'bg-black'}`}
                     />
                   ))}
                 </div>
@@ -226,78 +224,73 @@ export default function TetrisPage() {
           {/* Stats */}
           <div className="space-y-3 text-sm" aria-live="polite" aria-atomic="false">
             <div>
-              <p className="text-gray-500 text-xs uppercase tracking-widest dark:text-gray-400">
-                Score
-              </p>
-              <p className="font-bold text-gray-900 dark:text-gray-100" data-testid="score">
+              <p className="text-green-700 text-xs uppercase tracking-widest">SCORE</p>
+              <p className="font-bold text-green-300" data-testid="score">
                 {score}
               </p>
             </div>
             <div>
-              <p className="text-gray-500 text-xs uppercase tracking-widest dark:text-gray-400">
-                Level
-              </p>
-              <p className="font-bold text-gray-900 dark:text-gray-100" data-testid="level">
+              <p className="text-green-700 text-xs uppercase tracking-widest">LEVEL</p>
+              <p className="font-bold text-green-300" data-testid="level">
                 {level}
               </p>
             </div>
             <div>
-              <p className="text-gray-500 text-xs uppercase tracking-widest dark:text-gray-400">
-                Lines
-              </p>
-              <p className="font-bold text-gray-900 dark:text-gray-100" data-testid="lines">
+              <p className="text-green-700 text-xs uppercase tracking-widest">LINES</p>
+              <p className="font-bold text-green-300" data-testid="lines">
                 {lines}
               </p>
             </div>
           </div>
 
           {/* Controls hint */}
-          <div
-            className="mt-2 space-y-1 text-gray-400 text-xs dark:text-gray-600"
-            aria-label="Keyboard controls"
-          >
-            <p>←/A Move</p>
-            <p>→/D Move</p>
-            <p>↑/W Rotate</p>
-            <p>↓/S Soft drop</p>
-            <p>Space Drop</p>
-            <p>P Pause</p>
+          <div className="space-y-1 text-green-900 text-xs" aria-label="Keyboard controls">
+            <p>←/A MOVE</p>
+            <p>→/D MOVE</p>
+            <p>↑/W ROTATE</p>
+            <p>↓/S SOFT DROP</p>
+            <p>SPC HARD DROP</p>
+            <p>P PAUSE</p>
           </div>
         </div>
       </div>
 
       {/* Overlay messages */}
       {status === 'idle' && (
-        <output className="font-mono text-gray-500 text-sm dark:text-gray-400">
-          Press <kbd className="rounded bg-gray-200 px-1 dark:bg-gray-800">Enter</kbd> or{' '}
-          <kbd className="rounded bg-gray-200 px-1 dark:bg-gray-800">Space</kbd> to start
+        <output className="animate-pulse text-green-500 text-sm">
+          PRESS{' '}
+          <kbd className="border border-green-700 bg-green-950 px-1 text-green-300 not-italic">
+            ENTER
+          </kbd>{' '}
+          OR{' '}
+          <kbd className="border border-green-700 bg-green-950 px-1 text-green-300 not-italic">
+            SPACE
+          </kbd>{' '}
+          TO START
         </output>
       )}
       {status === 'paused' && (
-        <output
-          className="font-mono text-sm text-yellow-600 dark:text-yellow-400"
-          aria-live="polite"
-        >
-          Paused — press <kbd className="rounded bg-gray-200 px-1 dark:bg-gray-800">P</kbd> to
-          resume
+        <output className="text-sm text-yellow-400" aria-live="polite">
+          {'*** '}PAUSED — PRESS{' '}
+          <kbd className="border border-yellow-700 bg-yellow-950 px-1 text-yellow-300 not-italic">
+            P
+          </kbd>{' '}
+          TO RESUME{' ***'}
         </output>
       )}
       {status === 'over' && (
-        <p
-          className="font-mono text-red-600 text-sm dark:text-red-400"
-          role="alert"
-          aria-live="assertive"
-        >
-          Game Over — press <kbd className="rounded bg-gray-200 px-1 dark:bg-gray-800">Enter</kbd>{' '}
-          to restart
+        <p className="text-red-500 text-sm" role="alert" aria-live="assertive">
+          {'*** '}GAME OVER — PRESS{' '}
+          <kbd className="border border-red-700 bg-red-950 px-1 text-red-300 not-italic">ENTER</kbd>{' '}
+          TO RESTART{' ***'}
         </p>
       )}
 
       <Link
         to="/"
-        className="font-mono text-gray-400 text-xs underline-offset-2 hover:underline dark:text-gray-600"
+        className="text-green-900 text-xs underline-offset-2 hover:text-green-600 hover:underline"
       >
-        ← back home
+        &lt; BACK HOME
       </Link>
     </div>
   )

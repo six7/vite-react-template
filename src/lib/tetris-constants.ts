@@ -141,13 +141,13 @@ export const TETROMINOES: Record<TetrominoType, number[][][]> = {
 }
 
 export const TETROMINO_COLORS: Record<TetrominoType, string> = {
-  I: 'bg-cyan-400 dark:bg-cyan-500',
-  O: 'bg-yellow-400 dark:bg-yellow-500',
-  T: 'bg-purple-500 dark:bg-purple-400',
-  S: 'bg-green-500 dark:bg-green-400',
-  Z: 'bg-red-500 dark:bg-red-400',
-  J: 'bg-blue-500 dark:bg-blue-400',
-  L: 'bg-orange-500 dark:bg-orange-400',
+  I: 'bg-cyan-300',
+  O: 'bg-yellow-300',
+  T: 'bg-fuchsia-400',
+  S: 'bg-green-400',
+  Z: 'bg-red-500',
+  J: 'bg-blue-400',
+  L: 'bg-orange-400',
 }
 
 export const SCORE_TABLE: Record<number, number> = {
