@@ -32,5 +32,6 @@ export const router = createBrowserRouter(
         <Route path="overview" element={<UserDashboard />} />
       </Route>
     </Route>
-  )
+  ),
+  { basename: import.meta.env.BASE_URL }
 )
