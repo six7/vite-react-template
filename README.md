@@ -14,6 +14,8 @@
     </a>
 </p>
 
+**Last updated:** 2026-02-23
+
 ## Introduction
 
 A starter project for [React](https://reactjs.org/) with [Vite](https://vitejs.dev/), [Tailwind CSS](https://tailwindcss.com),
