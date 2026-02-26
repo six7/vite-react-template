@@ -11,7 +11,7 @@ export interface MeterProps extends AriaMeterProps {
 export function Meter({ label, ...props }: MeterProps) {
   return (
     <AriaMeter {...props} className={ctrp(props.className, 'flex flex-col gap-1')}>
-      {({ percentage }) => (
+      {({ percentage, valueText }) => (
         <>
           <div className="flex justify-between gap-2">
             <Label>{label}</Label>
@@ -28,7 +28,7 @@ export function Meter({ label, ...props }: MeterProps) {
                   className="inline-block h-4 w-4 align-text-bottom"
                 />
               )}
-              {' ${valueText}'}
+              {` ${valueText}`}
             </span>
           </div>
           <div className="-outline-offset-1 relative h-2 w-64 rounded-full bg-gray-300 outline outline-1 outline-transparent dark:bg-zinc-700">
